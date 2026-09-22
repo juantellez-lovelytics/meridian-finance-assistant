@@ -1,0 +1,19 @@
+# Fase J — targets benchmarked by default (scripts/benchmark_providers.py).
+# Each entry is a litellm "provider/model" string (see .env.example). The
+# comparison axis is the target (provider/model), not the provider alone --
+# multiple models behind one credential prove the same "no model computes"
+# invariant as multiple providers would. Override at the CLI with --targets
+# or point --targets-file at a different file; targets without a credential
+# are skipped with a reasoned message, never treated as an error.
+targets:
+  # Groq -- three production text/structured-output models of clearly
+  # different size, confirmed live at console.groq.com/docs/models and
+  # present in the installed litellm's own pricing map (litellm.model_cost).
+  - groq/llama-3.1-8b-instant # 8B
+  - groq/llama-3.3-70b-versatile # 70B, also this repo's .env.example default
+  - groq/openai/gpt-oss-120b # 120B
+  # Other providers -- included so the mechanism visibly supports them;
+  # they report as clean, reasoned credential skips until credentialed.
+  - anthropic/claude-sonnet-4-5
+  - openai/gpt-4o-mini
+  - gemini/gemini-2.0-flash

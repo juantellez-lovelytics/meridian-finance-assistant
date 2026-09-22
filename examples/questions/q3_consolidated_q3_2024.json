@@ -1,0 +1,8 @@
+{
+  "intent": "consolidated_spend",
+  "question": "What was our consolidated spend in Q3, in USD?",
+  "params": {
+    "quarter": "Q3",
+    "year": 2024
+  }
+}

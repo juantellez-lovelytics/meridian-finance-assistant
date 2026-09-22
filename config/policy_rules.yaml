@@ -1,0 +1,77 @@
+# T&E policy thresholds, read by src/finance_assistant/tools/te_policy.py.
+# Never embed these values in code -- every threshold here is sourced from
+# data/documents/travel_expense_policy.md and cites the section it came from,
+# so a finding can quote the exact clause it is checking.
+
+source_document: travel_expense_policy.md
+
+te_perimeter:
+  # A transaction is in the T&E perimeter when its account's chart-of-accounts
+  # parent resolves to this label. resolve_account_hierarchy is a *temporal*
+  # join (valid_from/valid_to), so which account_codes carry this parent_name
+  # can change over the data's date range -- see perimeter_basis in
+  # evaluate_te_policy() for how a reporting-only reclassification (parent
+  # moves, account_code and policy scope do not) is handled without silently
+  # dropping rows from evaluation.
+  parent_name: "Travel & Entertainment"
+  source_section: "Scope"
+
+lodging:
+  account_name: "Hotels & Lodging"
+  tier_one_cap_usd: 275.0
+  standard_cap_usd: 190.0
+  tier_one_cities:
+    - New York
+    - San Francisco
+    - Chicago
+    - Boston
+    - London
+    - Amsterdam
+    - Toronto
+    - Zurich
+  source_section: "Lodging"
+
+airfare:
+  account_name: "Airfare"
+  business_class_keyword: "business"
+  source_section: "Air travel"
+
+per_diem:
+  account_name: "Meals & Entertainment"
+  team_meals_keyword: "team meals"
+  daily_cap_usd: 85.0
+  source_section: "Meals"
+
+client_entertainment:
+  # This section backs TWO independent findings in te_policy.py
+  # (client_entertainment_approval and client_entertainment_attendee_record)
+  # with two DIFFERENT scopes, because the source document's "Client
+  # entertainment" section is two separate sentences:
+  #   1. "...over USD 500 per event requires the sign-off of a Vice
+  #      President in advance of the event." -- carries the threshold below;
+  #      only client_entertainment_approval reads approval_threshold_usd.
+  #   2. "The names and employers of all attendees must be recorded." -- no
+  #      threshold, applies to every client-entertainment row in the T&E
+  #      perimeter. client_entertainment_attendee_record must NOT gate on
+  #      approval_threshold_usd -- that was tried once and is a regression
+  #      (see tests/test_te_policy.py::
+  #      test_client_entertainment_attendee_record_has_no_threshold_gate).
+  #      Do not merge the two sub-rules or share the threshold between them.
+  account_name: "Meals & Entertainment"
+  keyword: "client entertainment"
+  approval_threshold_usd: 500.0
+  source_section: "Client entertainment"
+
+pre_approval:
+  threshold_usd: 1000.0
+  source_section: "Pre-approval"
+
+non_reimbursable:
+  keywords:
+    - personal entertainment
+    - airline lounge
+    - spouse
+    - partner travel
+    - traffic fine
+    - minibar
+  source_section: "Non-reimbursable"

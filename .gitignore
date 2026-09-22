@@ -1,0 +1,29 @@
+# Secretos - NUNCA commitear
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Claude Code
+.claude/settings.local.json
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Traces de corridas (demo/live) -- los 3 representativos committeados
+# viven en traces/samples/, fuera de este patrón.
+traces/*.json
+
+# Salida por defecto de scripts/benchmark_providers.py (Fase J) -- una
+# corrida ad hoc bajo demanda, nunca artefactos a commitear.
+benchmark/

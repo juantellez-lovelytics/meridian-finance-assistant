@@ -1,0 +1,35 @@
+account_code,account_name,parent_code,parent_name,statement_line,valid_from,valid_to
+6110,Salaries & Wages,6100,Personnel,Operating Expenses,2023-01-01,9999-12-31
+6120,Employer Contributions,6100,Personnel,Operating Expenses,2023-01-01,9999-12-31
+6130,Contract Labour,6100,Personnel,Operating Expenses,2023-01-01,9999-12-31
+6210,Airfare,6200,Travel & Entertainment,Operating Expenses,2023-01-01,9999-12-31
+6220,Hotels & Lodging,6200,Travel & Entertainment,Operating Expenses,2023-01-01,9999-12-31
+6230,Meals & Entertainment,6200,Travel & Entertainment,Operating Expenses,2023-01-01,2024-06-30
+6230,Meals & Entertainment,6700,Marketing,Operating Expenses,2024-07-01,9999-12-31
+6240,Ground Transport,6200,Travel & Entertainment,Operating Expenses,2023-01-01,9999-12-31
+6310,Rent,6300,Facilities,Operating Expenses,2023-01-01,9999-12-31
+6320,Utilities,6300,Facilities,Operating Expenses,2023-01-01,9999-12-31
+6330,Repairs & Maintenance,6300,Facilities,Operating Expenses,2023-01-01,9999-12-31
+6410,Audit & Tax,6400,Professional Services,Operating Expenses,2023-01-01,9999-12-31
+6420,Legal,6400,Professional Services,Operating Expenses,2023-01-01,9999-12-31
+6430,Consulting,6400,Professional Services,Operating Expenses,2023-01-01,9999-12-31
+6510,Software Subscriptions,6500,IT & Software,Operating Expenses,2023-01-01,9999-12-31
+6520,Hardware,6500,IT & Software,Operating Expenses,2023-01-01,9999-12-31
+6530,Cloud & Hosting,6500,IT & Software,Operating Expenses,2023-01-01,9999-12-31
+6610,Inbound Freight,6600,Logistics & Freight,Operating Expenses,2023-01-01,9999-12-31
+6620,Outbound Freight,6600,Logistics & Freight,Operating Expenses,2023-01-01,9999-12-31
+6630,Expedited Freight,6600,Logistics & Freight,Operating Expenses,2023-01-01,9999-12-31
+6710,Advertising,6700,Marketing,Operating Expenses,2023-01-01,9999-12-31
+6720,Trade Shows,6700,Marketing,Operating Expenses,2023-01-01,9999-12-31
+6810,Insurance,6800,Other Operating,Operating Expenses,2023-01-01,9999-12-31
+6820,Bank Charges,6800,Other Operating,Operating Expenses,2023-01-01,9999-12-31
+6830,Other Operating Expense,6800,Other Operating,Operating Expenses,2023-01-01,9999-12-31
+6100,Personnel,6000,Operating Expenses,Operating Expenses,2023-01-01,9999-12-31
+6200,Travel & Entertainment,6000,Operating Expenses,Operating Expenses,2023-01-01,9999-12-31
+6300,Facilities,6000,Operating Expenses,Operating Expenses,2023-01-01,9999-12-31
+6400,Professional Services,6000,Operating Expenses,Operating Expenses,2023-01-01,9999-12-31
+6500,IT & Software,6000,Operating Expenses,Operating Expenses,2023-01-01,9999-12-31
+6600,Logistics & Freight,6000,Operating Expenses,Operating Expenses,2023-01-01,9999-12-31
+6700,Marketing,6000,Operating Expenses,Operating Expenses,2023-01-01,9999-12-31
+6800,Other Operating,6000,Operating Expenses,Operating Expenses,2023-01-01,9999-12-31
+6000,Operating Expenses,,,Operating Expenses,2023-01-01,9999-12-31

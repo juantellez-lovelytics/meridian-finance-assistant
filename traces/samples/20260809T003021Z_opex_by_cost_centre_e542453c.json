@@ -1,0 +1,776 @@
+{
+  "run_id": "20260809T003021Z_opex_by_cost_centre_e542453c",
+  "started_at": "2026-08-09T00:30:21Z",
+  "question": "What was our opex by cost centre in Q2?",
+  "status": "answer",
+  "date_basis": "accrual_date",
+  "steps": [
+    {
+      "step": 1,
+      "type": "tool",
+      "name": "query_ledger",
+      "arguments": {
+        "rows": 10916,
+        "date_start": "2024-04-01 00:00:00",
+        "date_end": "2024-06-30 00:00:00",
+        "date_field": "accrual_date",
+        "entities": null,
+        "cost_centres": null,
+        "account_codes": null,
+        "vendor_ids": null
+      },
+      "result_summary": {
+        "rows": 1393,
+        "filters": {
+          "date_field": "accrual_date",
+          "date_start": "2024-04-01 00:00:00",
+          "date_end": "2024-06-30 00:00:00",
+          "entities": null,
+          "cost_centres": null,
+          "account_codes": null,
+          "vendor_ids": null
+        },
+        "rows_in": 10916,
+        "rows_matched": 1393
+      },
+      "duration_ms": 0
+    },
+    {
+      "step": 2,
+      "type": "tool",
+      "name": "resolve_account_hierarchy",
+      "arguments": {
+        "rows": 1393,
+        "coa": 34,
+        "date_field": "accrual_date",
+        "strict": false
+      },
+      "result_summary": {
+        "rows": 1393,
+        "matched_rows": 1393,
+        "total_rows": 1393,
+        "date_field": "accrual_date",
+        "unmapped": []
+      },
+      "duration_ms": 10
+    },
+    {
+      "step": 3,
+      "type": "tool",
+      "name": "normalize_reporting_cost_centre",
+      "arguments": {
+        "rows": 1393,
+        "date_field": "accrual_date",
+        "transitions": null
+      },
+      "result_summary": {
+        "rows": 1393,
+        "date_field": "accrual_date",
+        "total_rows": 1393,
+        "applied": [
+          {
+            "row_index": 6810,
+            "source_cost_centre": "OPS-NA",
+            "reporting_cost_centre": "OPS-AMER",
+            "effective_date": "2024-07-01 00:00:00",
+            "source_document": "board_memo_2024_q2.md",
+            "source_section": "2. Americas reorganisation",
+            "row_id": "T000823"
+          },
+          {
+            "row_index": 6827,
+            "source_cost_centre": "OPS-NA",
+            "reporting_cost_centre": "OPS-AMER",
+            "effective_date": "2024-07-01 00:00:00",
+            "source_document": "board_memo_2024_q2.md",
+            "source_section": "2. Americas reorganisation",
+            "row_id": "T000789"
+          },
+          {
+            "row_index": 6844,
+            "source_cost_centre": "OPS-NA",
+            "reporting_cost_centre": "OPS-AMER",
+            "effective_date": "2024-07-01 00:00:00",
+            "source_document": "board_memo_2024_q2.md",
+            "source_section": "2. Americas reorganisation",
+            "row_id": "T000783"
+          },
+          {
+            "row_index": 6845,
+            "source_cost_centre": "OPS-NA",
+            "reporting_cost_centre": "OPS-AMER",
+            "effective_date": "2024-07-01 00:00:00",
+            "source_document": "board_memo_2024_q2.md",
+            "source_section": "2. Americas reorganisation",
+            "row_id": "T000786"
+          },
+          {
+            "row_index": 6846,
+            "source_cost_centre": "OPS-NA",
+            "reporting_cost_centre": "OPS-AMER",
+            "effective_date": "2024-07-01 00:00:00",
+            "source_document": "board_memo_2024_q2.md",
+            "source_section": "2. Americas reorganisation",
+            "row_id": "T000799"
+          },
+          {
+            "row_index": 6861,
+            "source_cost_centre": "OPS-NA",
+            "reporting_cost_centre": "OPS-AMER",
+            "effective_date": "2024-07-01 00:00:00",
+            "source_document": "board_memo_2024_q2.md",
+            "source_section": "2. Americas reorganisation",
+            "row_id": "T000819"
+          },
+          {
+            "row_index": 6875,
+            "source_cost_centre": "OPS-NA",
+            "reporting_cost_centre": "OPS-AMER",
+            "effective_date": "2024-07-01 00:00:00",
+            "source_document": "board_memo_2024_q2.md",
+            "source_section": "2. Americas reorganisation",
+            "row_id": "T000809"
+          },
+          {
+            "row_index": 6893,
+            "source_cost_centre": "OPS-NA",
+            "reporting_cost_centre": "OPS-AMER",
+            "effective_date": "2024-07-01 00:00:00",
+            "source_document": "board_memo_2024_q2.md",
+            "source_section": "2. Americas reorganisation",
+            "row_id": "T000815"
+          },
+          "+147 more"
+        ]
+      },
+      "duration_ms": 2
+    },
+    {
+      "step": 4,
+      "type": "tool",
+      "name": "convert_to_usd",
+      "arguments": {
+        "rows": 1393,
+        "fx": 71,
+        "target": "USD",
+        "date_field": "accrual_date"
+      },
+      "result_summary": {
+        "rows": 1393,
+        "coverage": {
+          "selected_rows": 1393,
+          "convertible_rows": 1393,
+          "per_currency": {
+            "CAD": {
+              "currency": "CAD",
+              "total_rows": 323,
+              "convertible_rows": 323,
+              "total_amount_local": 3156182.54,
+              "convertible_amount_local": 3156182.54
+            },
+            "EUR": {
+              "currency": "EUR",
+              "total_rows": 474,
+              "convertible_rows": 474,
+              "total_amount_local": 4416576.390000001,
+              "convertible_amount_local": 4416576.390000001
+            },
+            "USD": {
+              "currency": "USD",
+              "total_rows": 596,
+              "convertible_rows": 596,
+              "total_amount_local": 5268684.14,
+              "convertible_amount_local": 5268684.14
+            }
+          }
+        },
+        "missing": []
+      },
+      "duration_ms": 12
+    },
+    {
+      "step": 5,
+      "type": "tool",
+      "name": "aggregate_usd",
+      "arguments": {
+        "result": "<FxConversionResult: 1393 rows, selected_rows=1393, convertible_rows=1393, per_currency=3, missing=0>"
+      },
+      "result_summary": {
+        "converted_amount_usd": 12780721.798092201,
+        "coverage": {
+          "selected_rows": 1393,
+          "convertible_rows": 1393,
+          "per_currency": {
+            "CAD": {
+              "currency": "CAD",
+              "total_rows": 323,
+              "convertible_rows": 323,
+              "total_amount_local": 3156182.54,
+              "convertible_amount_local": 3156182.54
+            },
+            "EUR": {
+              "currency": "EUR",
+              "total_rows": 474,
+              "convertible_rows": 474,
+              "total_amount_local": 4416576.390000001,
+              "convertible_amount_local": 4416576.390000001
+            },
+            "USD": {
+              "currency": "USD",
+              "total_rows": 596,
+              "convertible_rows": 596,
+              "total_amount_local": 5268684.14,
+              "convertible_amount_local": 5268684.14
+            }
+          }
+        }
+      },
+      "duration_ms": 0
+    },
+    {
+      "step": 6,
+      "type": "tool",
+      "name": "aggregate_usd_by",
+      "arguments": {
+        "result": "<FxConversionResult: 1393 rows, selected_rows=1393, convertible_rows=1393, per_currency=3, missing=0>",
+        "by": [
+          "reporting_cost_centre"
+        ]
+      },
+      "result_summary": {
+        "ENG-EU": {
+          "converted_amount_usd": 1521708.7180453,
+          "coverage": {
+            "selected_rows": 150,
+            "convertible_rows": 150,
+            "per_currency": {
+              "EUR": {
+                "currency": "EUR",
+                "total_rows": 150,
+                "convertible_rows": 150,
+                "total_amount_local": 1277390.78,
+                "convertible_amount_local": 1277390.78
+              }
+            }
+          }
+        },
+        "ENG-US": {
+          "converted_amount_usd": 1254870.59,
+          "coverage": {
+            "selected_rows": 142,
+            "convertible_rows": 142,
+            "per_currency": {
+              "USD": {
+                "currency": "USD",
+                "total_rows": 142,
+                "convertible_rows": 142,
+                "total_amount_local": 1254870.59,
+                "convertible_amount_local": 1254870.59
+              }
+            }
+          }
+        },
+        "MKT-US": {
+          "converted_amount_usd": 853906.97,
+          "coverage": {
+            "selected_rows": 140,
+            "convertible_rows": 140,
+            "per_currency": {
+              "USD": {
+                "currency": "USD",
+                "total_rows": 140,
+                "convertible_rows": 140,
+                "total_amount_local": 853906.97,
+                "convertible_amount_local": 853906.97
+              }
+            }
+          }
+        },
+        "OPS-AMER": {
+          "converted_amount_usd": 2096018.97,
+          "coverage": {
+            "selected_rows": 155,
+            "convertible_rows": 155,
+            "per_currency": {
+              "USD": {
+                "currency": "USD",
+                "total_rows": 155,
+                "convertible_rows": 155,
+                "total_amount_local": 2096018.97,
+                "convertible_amount_local": 2096018.97
+              }
+            }
+          }
+        },
+        "OPS-CA": {
+          "converted_amount_usd": 1512779.2248054,
+          "coverage": {
+            "selected_rows": 147,
+            "convertible_rows": 147,
+            "per_currency": {
+              "CAD": {
+                "currency": "CAD",
+                "total_rows": 147,
+                "convertible_rows": 147,
+                "total_amount_local": 2120219.2,
+                "convertible_amount_local": 2120219.2
+              }
+            }
+          }
+        },
+        "OPS-EU": {
+          "converted_amount_usd": 2503945.3815794,
+          "coverage": {
+            "selected_rows": 171,
+            "convertible_rows": 171,
+            "per_currency": {
+              "EUR": {
+                "currency": "EUR",
+                "total_rows": 171,
+                "convertible_rows": 171,
+                "total_amount_local": 2102863.1399999997,
+                "convertible_amount_local": 2102863.1399999997
+              }
+            }
+          }
+        },
+        "SGA-CA": {
+          "converted_amount_usd": 739198.096634,
+          "coverage": {
+            "selected_rows": 176,
+            "convertible_rows": 176,
+            "per_currency": {
+              "CAD": {
+                "currency": "CAD",
+                "total_rows": 176,
+                "convertible_rows": 176,
+                "total_amount_local": 1035963.34,
+                "convertible_amount_local": 1035963.34
+              }
+            }
+          }
+        },
+        "SGA-EU": {
+          "converted_amount_usd": 1234406.2370281,
+          "coverage": {
+            "selected_rows": 153,
+            "convertible_rows": 153,
+            "per_currency": {
+              "EUR": {
+                "currency": "EUR",
+                "total_rows": 153,
+                "convertible_rows": 153,
+                "total_amount_local": 1036322.4700000001,
+                "convertible_amount_local": 1036322.4700000001
+              }
+            }
+          }
+        },
+        "__truncated__": "+1 more"
+      },
+      "duration_ms": 8
+    }
+  ],
+  "model_calls": [],
+  "final_evidence": {
+    "status": "answer",
+    "intent": "opex_by_cost_centre",
+    "result": {
+      "quarter": "Q2",
+      "year": 2024,
+      "date_basis": "accrual_date",
+      "opex_perimeter": {
+        "statement_line": "Operating Expenses"
+      },
+      "opex_perimeter_rows": 1393,
+      "total_rows_before_perimeter_filter": 1393,
+      "total_usd": 12780721.798092201,
+      "by_cost_centre_usd": {
+        "ENG-EU": 1521708.7180453,
+        "ENG-US": 1254870.59,
+        "MKT-US": 853906.97,
+        "OPS-AMER": 2096018.97,
+        "OPS-CA": 1512779.2248054,
+        "OPS-EU": 2503945.3815794,
+        "SGA-CA": 739198.096634,
+        "SGA-EU": 1234406.2370281,
+        "SGA-US": 1063887.6099999999
+      },
+      "unmapped_account_rows": 0
+    },
+    "sources": [],
+    "assumptions": [
+      "date basis: accrual_date",
+      "opex perimeter: chart_of_accounts.statement_line == 'Operating Expenses'",
+      "the perimeter did not exclude any row: every chart-of-accounts account belongs to the declared line",
+      "R4 reporting_cost_centre normalization applied before aggregation"
+    ],
+    "warnings": [],
+    "missing_evidence": [],
+    "coverage": {
+      "selected_rows": 1393,
+      "computable_rows": 1393,
+      "computable_amount_pct": 100.0
+    },
+    "calculations": [],
+    "tool_calls": [
+      {
+        "tool": "query_ledger",
+        "arguments_summary": {
+          "rows": 10916,
+          "date_start": "2024-04-01 00:00:00",
+          "date_end": "2024-06-30 00:00:00",
+          "date_field": "accrual_date",
+          "entities": null,
+          "cost_centres": null,
+          "account_codes": null,
+          "vendor_ids": null
+        },
+        "result_summary": {
+          "rows": 1393,
+          "filters": {
+            "date_field": "accrual_date",
+            "date_start": "2024-04-01 00:00:00",
+            "date_end": "2024-06-30 00:00:00",
+            "entities": null,
+            "cost_centres": null,
+            "account_codes": null,
+            "vendor_ids": null
+          },
+          "rows_in": 10916,
+          "rows_matched": 1393
+        },
+        "duration_ms": 0
+      },
+      {
+        "tool": "resolve_account_hierarchy",
+        "arguments_summary": {
+          "rows": 1393,
+          "coa": 34,
+          "date_field": "accrual_date",
+          "strict": false
+        },
+        "result_summary": {
+          "rows": 1393,
+          "matched_rows": 1393,
+          "total_rows": 1393,
+          "date_field": "accrual_date",
+          "unmapped": []
+        },
+        "duration_ms": 10
+      },
+      {
+        "tool": "normalize_reporting_cost_centre",
+        "arguments_summary": {
+          "rows": 1393,
+          "date_field": "accrual_date",
+          "transitions": null
+        },
+        "result_summary": {
+          "rows": 1393,
+          "date_field": "accrual_date",
+          "total_rows": 1393,
+          "applied": [
+            {
+              "row_index": 6810,
+              "source_cost_centre": "OPS-NA",
+              "reporting_cost_centre": "OPS-AMER",
+              "effective_date": "2024-07-01 00:00:00",
+              "source_document": "board_memo_2024_q2.md",
+              "source_section": "2. Americas reorganisation",
+              "row_id": "T000823"
+            },
+            {
+              "row_index": 6827,
+              "source_cost_centre": "OPS-NA",
+              "reporting_cost_centre": "OPS-AMER",
+              "effective_date": "2024-07-01 00:00:00",
+              "source_document": "board_memo_2024_q2.md",
+              "source_section": "2. Americas reorganisation",
+              "row_id": "T000789"
+            },
+            {
+              "row_index": 6844,
+              "source_cost_centre": "OPS-NA",
+              "reporting_cost_centre": "OPS-AMER",
+              "effective_date": "2024-07-01 00:00:00",
+              "source_document": "board_memo_2024_q2.md",
+              "source_section": "2. Americas reorganisation",
+              "row_id": "T000783"
+            },
+            {
+              "row_index": 6845,
+              "source_cost_centre": "OPS-NA",
+              "reporting_cost_centre": "OPS-AMER",
+              "effective_date": "2024-07-01 00:00:00",
+              "source_document": "board_memo_2024_q2.md",
+              "source_section": "2. Americas reorganisation",
+              "row_id": "T000786"
+            },
+            {
+              "row_index": 6846,
+              "source_cost_centre": "OPS-NA",
+              "reporting_cost_centre": "OPS-AMER",
+              "effective_date": "2024-07-01 00:00:00",
+              "source_document": "board_memo_2024_q2.md",
+              "source_section": "2. Americas reorganisation",
+              "row_id": "T000799"
+            },
+            {
+              "row_index": 6861,
+              "source_cost_centre": "OPS-NA",
+              "reporting_cost_centre": "OPS-AMER",
+              "effective_date": "2024-07-01 00:00:00",
+              "source_document": "board_memo_2024_q2.md",
+              "source_section": "2. Americas reorganisation",
+              "row_id": "T000819"
+            },
+            {
+              "row_index": 6875,
+              "source_cost_centre": "OPS-NA",
+              "reporting_cost_centre": "OPS-AMER",
+              "effective_date": "2024-07-01 00:00:00",
+              "source_document": "board_memo_2024_q2.md",
+              "source_section": "2. Americas reorganisation",
+              "row_id": "T000809"
+            },
+            {
+              "row_index": 6893,
+              "source_cost_centre": "OPS-NA",
+              "reporting_cost_centre": "OPS-AMER",
+              "effective_date": "2024-07-01 00:00:00",
+              "source_document": "board_memo_2024_q2.md",
+              "source_section": "2. Americas reorganisation",
+              "row_id": "T000815"
+            },
+            "+147 more"
+          ]
+        },
+        "duration_ms": 2
+      },
+      {
+        "tool": "convert_to_usd",
+        "arguments_summary": {
+          "rows": 1393,
+          "fx": 71,
+          "target": "USD",
+          "date_field": "accrual_date"
+        },
+        "result_summary": {
+          "rows": 1393,
+          "coverage": {
+            "selected_rows": 1393,
+            "convertible_rows": 1393,
+            "per_currency": {
+              "CAD": {
+                "currency": "CAD",
+                "total_rows": 323,
+                "convertible_rows": 323,
+                "total_amount_local": 3156182.54,
+                "convertible_amount_local": 3156182.54
+              },
+              "EUR": {
+                "currency": "EUR",
+                "total_rows": 474,
+                "convertible_rows": 474,
+                "total_amount_local": 4416576.390000001,
+                "convertible_amount_local": 4416576.390000001
+              },
+              "USD": {
+                "currency": "USD",
+                "total_rows": 596,
+                "convertible_rows": 596,
+                "total_amount_local": 5268684.14,
+                "convertible_amount_local": 5268684.14
+              }
+            }
+          },
+          "missing": []
+        },
+        "duration_ms": 12
+      },
+      {
+        "tool": "aggregate_usd",
+        "arguments_summary": {
+          "result": "<FxConversionResult: 1393 rows, selected_rows=1393, convertible_rows=1393, per_currency=3, missing=0>"
+        },
+        "result_summary": {
+          "converted_amount_usd": 12780721.798092201,
+          "coverage": {
+            "selected_rows": 1393,
+            "convertible_rows": 1393,
+            "per_currency": {
+              "CAD": {
+                "currency": "CAD",
+                "total_rows": 323,
+                "convertible_rows": 323,
+                "total_amount_local": 3156182.54,
+                "convertible_amount_local": 3156182.54
+              },
+              "EUR": {
+                "currency": "EUR",
+                "total_rows": 474,
+                "convertible_rows": 474,
+                "total_amount_local": 4416576.390000001,
+                "convertible_amount_local": 4416576.390000001
+              },
+              "USD": {
+                "currency": "USD",
+                "total_rows": 596,
+                "convertible_rows": 596,
+                "total_amount_local": 5268684.14,
+                "convertible_amount_local": 5268684.14
+              }
+            }
+          }
+        },
+        "duration_ms": 0
+      },
+      {
+        "tool": "aggregate_usd_by",
+        "arguments_summary": {
+          "result": "<FxConversionResult: 1393 rows, selected_rows=1393, convertible_rows=1393, per_currency=3, missing=0>",
+          "by": [
+            "reporting_cost_centre"
+          ]
+        },
+        "result_summary": {
+          "ENG-EU": {
+            "converted_amount_usd": 1521708.7180453,
+            "coverage": {
+              "selected_rows": 150,
+              "convertible_rows": 150,
+              "per_currency": {
+                "EUR": {
+                  "currency": "EUR",
+                  "total_rows": 150,
+                  "convertible_rows": 150,
+                  "total_amount_local": 1277390.78,
+                  "convertible_amount_local": 1277390.78
+                }
+              }
+            }
+          },
+          "ENG-US": {
+            "converted_amount_usd": 1254870.59,
+            "coverage": {
+              "selected_rows": 142,
+              "convertible_rows": 142,
+              "per_currency": {
+                "USD": {
+                  "currency": "USD",
+                  "total_rows": 142,
+                  "convertible_rows": 142,
+                  "total_amount_local": 1254870.59,
+                  "convertible_amount_local": 1254870.59
+                }
+              }
+            }
+          },
+          "MKT-US": {
+            "converted_amount_usd": 853906.97,
+            "coverage": {
+              "selected_rows": 140,
+              "convertible_rows": 140,
+              "per_currency": {
+                "USD": {
+                  "currency": "USD",
+                  "total_rows": 140,
+                  "convertible_rows": 140,
+                  "total_amount_local": 853906.97,
+                  "convertible_amount_local": 853906.97
+                }
+              }
+            }
+          },
+          "OPS-AMER": {
+            "converted_amount_usd": 2096018.97,
+            "coverage": {
+              "selected_rows": 155,
+              "convertible_rows": 155,
+              "per_currency": {
+                "USD": {
+                  "currency": "USD",
+                  "total_rows": 155,
+                  "convertible_rows": 155,
+                  "total_amount_local": 2096018.97,
+                  "convertible_amount_local": 2096018.97
+                }
+              }
+            }
+          },
+          "OPS-CA": {
+            "converted_amount_usd": 1512779.2248054,
+            "coverage": {
+              "selected_rows": 147,
+              "convertible_rows": 147,
+              "per_currency": {
+                "CAD": {
+                  "currency": "CAD",
+                  "total_rows": 147,
+                  "convertible_rows": 147,
+                  "total_amount_local": 2120219.2,
+                  "convertible_amount_local": 2120219.2
+                }
+              }
+            }
+          },
+          "OPS-EU": {
+            "converted_amount_usd": 2503945.3815794,
+            "coverage": {
+              "selected_rows": 171,
+              "convertible_rows": 171,
+              "per_currency": {
+                "EUR": {
+                  "currency": "EUR",
+                  "total_rows": 171,
+                  "convertible_rows": 171,
+                  "total_amount_local": 2102863.1399999997,
+                  "convertible_amount_local": 2102863.1399999997
+                }
+              }
+            }
+          },
+          "SGA-CA": {
+            "converted_amount_usd": 739198.096634,
+            "coverage": {
+              "selected_rows": 176,
+              "convertible_rows": 176,
+              "per_currency": {
+                "CAD": {
+                  "currency": "CAD",
+                  "total_rows": 176,
+                  "convertible_rows": 176,
+                  "total_amount_local": 1035963.34,
+                  "convertible_amount_local": 1035963.34
+                }
+              }
+            }
+          },
+          "SGA-EU": {
+            "converted_amount_usd": 1234406.2370281,
+            "coverage": {
+              "selected_rows": 153,
+              "convertible_rows": 153,
+              "per_currency": {
+                "EUR": {
+                  "currency": "EUR",
+                  "total_rows": 153,
+                  "convertible_rows": 153,
+                  "total_amount_local": 1036322.4700000001,
+                  "convertible_amount_local": 1036322.4700000001
+                }
+              }
+            }
+          },
+          "__truncated__": "+1 more"
+        },
+        "duration_ms": 8
+      }
+    ],
+    "refusal_reason": null,
+    "clarification_options": []
+  },
+  "duration_ms": 35,
+  "estimated_cost_usd": 0.0
+}

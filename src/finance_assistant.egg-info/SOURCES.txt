@@ -1,0 +1,9 @@
+pyproject.toml
+src/finance_assistant/__init__.py
+src/finance_assistant/config.py
+src/finance_assistant.egg-info/PKG-INFO
+src/finance_assistant.egg-info/SOURCES.txt
+src/finance_assistant.egg-info/dependency_links.txt
+src/finance_assistant.egg-info/requires.txt
+src/finance_assistant.egg-info/top_level.txt
+src/finance_assistant/data/__init__.py

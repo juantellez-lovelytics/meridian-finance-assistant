@@ -1,0 +1,908 @@
+{
+  "run_id": "20260809T003023Z_te_policy_check_55fee151",
+  "started_at": "2026-08-09T00:30:23Z",
+  "question": "Which transactions breach our travel & entertainment policy?",
+  "status": "answer",
+  "date_basis": "accrual_date",
+  "steps": [
+    {
+      "step": 1,
+      "type": "tool",
+      "name": "query_ledger",
+      "arguments": {
+        "rows": 10916,
+        "date_start": "2024-01-01",
+        "date_end": "2024-12-31",
+        "date_field": "accrual_date",
+        "entities": null,
+        "cost_centres": null,
+        "account_codes": null,
+        "vendor_ids": null
+      },
+      "result_summary": {
+        "rows": 5440,
+        "filters": {
+          "date_field": "accrual_date",
+          "date_start": "2024-01-01 00:00:00",
+          "date_end": "2024-12-31 00:00:00",
+          "entities": null,
+          "cost_centres": null,
+          "account_codes": null,
+          "vendor_ids": null
+        },
+        "rows_in": 10916,
+        "rows_matched": 5440
+      },
+      "duration_ms": 1
+    },
+    {
+      "step": 2,
+      "type": "tool",
+      "name": "load_policy_rules",
+      "arguments": {
+        "path": null
+      },
+      "result_summary": {
+        "source_document": "travel_expense_policy.md",
+        "te_perimeter": {
+          "parent_name": "Travel & Entertainment",
+          "source_section": "Scope"
+        },
+        "lodging": {
+          "account_name": "Hotels & Lodging",
+          "tier_one_cap_usd": 275.0,
+          "standard_cap_usd": 190.0,
+          "tier_one_cities": [
+            "New York",
+            "San Francisco",
+            "Chicago",
+            "Boston",
+            "London",
+            "Amsterdam",
+            "Toronto",
+            "Zurich"
+          ],
+          "source_section": "Lodging"
+        },
+        "airfare": {
+          "account_name": "Airfare",
+          "business_class_keyword": "business",
+          "source_section": "Air travel"
+        },
+        "per_diem": {
+          "account_name": "Meals & Entertainment",
+          "team_meals_keyword": "team meals",
+          "daily_cap_usd": 85.0,
+          "source_section": "Meals"
+        },
+        "client_entertainment": {
+          "account_name": "Meals & Entertainment",
+          "keyword": "client entertainment",
+          "approval_threshold_usd": 500.0,
+          "source_section": "Client entertainment"
+        },
+        "pre_approval": {
+          "threshold_usd": 1000.0,
+          "source_section": "Pre-approval"
+        },
+        "non_reimbursable": {
+          "keywords": [
+            "personal entertainment",
+            "airline lounge",
+            "spouse",
+            "partner travel",
+            "traffic fine",
+            "minibar"
+          ],
+          "source_section": "Non-reimbursable"
+        }
+      },
+      "duration_ms": 1
+    },
+    {
+      "step": 3,
+      "type": "tool",
+      "name": "evaluate_te_policy",
+      "arguments": {
+        "rows": 5440,
+        "coa": 34,
+        "fx": 71,
+        "policy": "<PolicyRules: source_document=travel_expense_policy.md, parent_name=Travel & Entertainment, source_section=Scope, account_name=Hotels & Lodging, tier_one_cap_usd=275.0, standard_cap_usd=190.0, tier_one_cities=8, source_section=Lodging, account_name=Airfare, business_class_keyword=business, source_section=Air travel, account_name=Meals & Entertainment, team_meals_keyword=team meals, daily_cap_usd=85.0, source_section=Meals, account_name=Meals & Entertainment, keyword=client entertainment, approval_threshold_usd=500.0, source_section=Client entertainment, threshold_usd=1000.0, source_section=Pre-approval, keywords=6, source_section=Non-reimbursable>",
+        "perimeter_basis": "reported",
+        "date_field": "accrual_date"
+      },
+      "result_summary": {
+        "findings": [
+          {
+            "txn_id": "T000625",
+            "rule_id": "lodging_nightly_cap",
+            "state": "NOT_APPLICABLE",
+            "observed_value": null,
+            "threshold": null,
+            "reason": "row is not in the Hotels & Lodging category",
+            "source_document": "travel_expense_policy.md",
+            "source_section": "Lodging"
+          },
+          {
+            "txn_id": "T000625",
+            "rule_id": "business_class_approval",
+            "state": "NOT_APPLICABLE",
+            "observed_value": null,
+            "threshold": "business",
+            "reason": "row is not in the Airfare category",
+            "source_document": "travel_expense_policy.md",
+            "source_section": "Air travel"
+          },
+          {
+            "txn_id": "T000625",
+            "rule_id": "per_diem_daily_cap",
+            "state": "NOT_APPLICABLE",
+            "observed_value": null,
+            "threshold": 85.0,
+            "reason": "row is not a per-diem meals expense",
+            "source_document": "travel_expense_policy.md",
+            "source_section": "Meals"
+          },
+          {
+            "txn_id": "T000625",
+            "rule_id": "client_entertainment_approval",
+            "state": "NOT_A_BREACH",
+            "observed_value": 1552.89,
+            "threshold": 500.0,
+            "reason": "VP approval reference recorded",
+            "source_document": "travel_expense_policy.md",
+            "source_section": "Client entertainment"
+          },
+          {
+            "txn_id": "T000625",
+            "rule_id": "client_entertainment_attendee_record",
+            "state": "INSUFFICIENT_EVIDENCE",
+            "observed_value": null,
+            "threshold": null,
+            "reason": "attendee name/employer roster is not captured anywhere in gl_transactions.csv, so this sub-rule can never be confirmed from ledger data alone",
+            "source_document": "travel_expense_policy.md",
+            "source_section": "Client entertainment"
+          },
+          {
+            "txn_id": "T000625",
+            "rule_id": "pre_approval_threshold",
+            "state": "NOT_A_BREACH",
+            "observed_value": 1552.89,
+            "threshold": 1000.0,
+            "reason": "approval reference recorded",
+            "source_document": "travel_expense_policy.md",
+            "source_section": "Pre-approval"
+          },
+          {
+            "txn_id": "T000625",
+            "rule_id": "non_reimbursable_keyword",
+            "state": "NOT_A_BREACH",
+            "observed_value": "client entertainment Milwaukee",
+            "threshold": null,
+            "reason": "no non-reimbursable keyword found in memo",
+            "source_document": "travel_expense_policy.md",
+            "source_section": "Non-reimbursable"
+          },
+          {
+            "txn_id": "T001793",
+            "rule_id": "lodging_nightly_cap",
+            "state": "NOT_APPLICABLE",
+            "observed_value": null,
+            "threshold": null,
+            "reason": "row is not in the Hotels & Lodging category",
+            "source_document": "travel_expense_policy.md",
+            "source_section": "Lodging"
+          },
+          "+12865 more"
+        ],
+        "perimeter_basis": "reported",
+        "perimeter_rows": 1839,
+        "total_rows": 5440,
+        "unmapped_account_rows": 0,
+        "rows_excluded_by_reclassification": {
+          "row_count": 324,
+          "account_codes": [
+            "6230"
+          ]
+        },
+        "warnings": [
+          "324 row(s) under account_code(s) ['6230'] were T&E policy scope at some point in this dataset's date range but fall outside the 'reported' perimeter basis due to a chart-of-accounts reclassification …"
+        ],
+        "limitation": "Findings are rule-match candidates for review, never a definitive compliance audit. Business-class flight duration and per-diem day-counts are absent from this dataset and are never inferred from the…"
+      },
+      "duration_ms": 74
+    },
+    {
+      "step": 4,
+      "type": "tool",
+      "name": "search_documents",
+      "arguments": {
+        "query": "Air travel",
+        "filenames": [
+          "travel_expense_policy.md"
+        ],
+        "documents_dir": null,
+        "max_results": 1
+      },
+      "result_summary": {
+        "query": "Air travel",
+        "filenames_searched": [
+          "travel_expense_policy.md"
+        ],
+        "matches": [
+          {
+            "filename": "travel_expense_policy.md",
+            "section": "Air travel",
+            "snippet": "Economy class is required for all scheduled flights with a total duration under six hours. Business class may be booked for flights over six hours with the written approval of a Vice President.",
+            "evidence_id": "doc:travel_expense_policy:2:6d29e78527b5",
+            "score": 4.0,
+            "matched_terms": [
+              "air",
+              "travel"
+            ]
+          }
+        ]
+      },
+      "duration_ms": 0
+    },
+    {
+      "step": 5,
+      "type": "tool",
+      "name": "search_documents",
+      "arguments": {
+        "query": "Client entertainment",
+        "filenames": [
+          "travel_expense_policy.md"
+        ],
+        "documents_dir": null,
+        "max_results": 1
+      },
+      "result_summary": {
+        "query": "Client entertainment",
+        "filenames_searched": [
+          "travel_expense_policy.md"
+        ],
+        "matches": [
+          {
+            "filename": "travel_expense_policy.md",
+            "section": "Client entertainment",
+            "snippet": "Client entertainment over **USD 500** per event requires the sign-off of a Vice President in advance of the event. The names and employers of all attendees must…",
+            "evidence_id": "doc:travel_expense_policy:5:e36d678c8bce",
+            "score": 6.0,
+            "matched_terms": [
+              "client",
+              "entertainment"
+            ]
+          }
+        ]
+      },
+      "duration_ms": 0
+    },
+    {
+      "step": 6,
+      "type": "tool",
+      "name": "search_documents",
+      "arguments": {
+        "query": "Lodging",
+        "filenames": [
+          "travel_expense_policy.md"
+        ],
+        "documents_dir": null,
+        "max_results": 1
+      },
+      "result_summary": {
+        "query": "Lodging",
+        "filenames_searched": [
+          "travel_expense_policy.md"
+        ],
+        "matches": [
+          {
+            "filename": "travel_expense_policy.md",
+            "section": "Lodging",
+            "snippet": "Nightly room rates must not exceed **USD 275** in tier-one cities and **USD 190** elsewhere. Tier-one cities are: New York, San Francisco, Chicago, Boston, London, Amsterdam, Toronto, Zurich. Rates a…",
+            "evidence_id": "doc:travel_expense_policy:3:625a44fd5d36",
+            "score": 2.0,
+            "matched_terms": [
+              "lodging"
+            ]
+          }
+        ]
+      },
+      "duration_ms": 0
+    },
+    {
+      "step": 7,
+      "type": "tool",
+      "name": "search_documents",
+      "arguments": {
+        "query": "Meals",
+        "filenames": [
+          "travel_expense_policy.md"
+        ],
+        "documents_dir": null,
+        "max_results": 1
+      },
+      "result_summary": {
+        "query": "Meals",
+        "filenames_searched": [
+          "travel_expense_policy.md"
+        ],
+        "matches": [
+          {
+            "filename": "travel_expense_policy.md",
+            "section": "Meals",
+            "snippet": "A per-diem of **USD 85 per day** applies to employee meals while travelling. Receipts are not required within the per-diem.",
+            "evidence_id": "doc:travel_expense_policy:4:21c83b371b9e",
+            "score": 3.0,
+            "matched_terms": [
+              "meals"
+            ]
+          }
+        ]
+      },
+      "duration_ms": 0
+    },
+    {
+      "step": 8,
+      "type": "tool",
+      "name": "search_documents",
+      "arguments": {
+        "query": "Non-reimbursable",
+        "filenames": [
+          "travel_expense_policy.md"
+        ],
+        "documents_dir": null,
+        "max_results": 1
+      },
+      "result_summary": {
+        "query": "Non-reimbursable",
+        "filenames_searched": [
+          "travel_expense_policy.md"
+        ],
+        "matches": [
+          {
+            "filename": "travel_expense_policy.md",
+            "section": "Non-reimbursable",
+            "snippet": "Personal entertainment, airline lounge memberships, spouse or partner travel, traffic fines, and in-room minibar charges.",
+            "evidence_id": "doc:travel_expense_policy:7:aff945ac7133",
+            "score": 4.0,
+            "matched_terms": [
+              "non",
+              "reimbursable"
+            ]
+          }
+        ]
+      },
+      "duration_ms": 0
+    },
+    {
+      "step": 9,
+      "type": "tool",
+      "name": "search_documents",
+      "arguments": {
+        "query": "Pre-approval",
+        "filenames": [
+          "travel_expense_policy.md"
+        ],
+        "documents_dir": null,
+        "max_results": 1
+      },
+      "result_summary": {
+        "query": "Pre-approval",
+        "filenames_searched": [
+          "travel_expense_policy.md"
+        ],
+        "matches": [
+          {
+            "filename": "travel_expense_policy.md",
+            "section": "Pre-approval",
+            "snippet": "Any single expense of **USD 1,000 or more** requires documented pre-approval before the commitment is made. The approval reference must be recorded against the transaction at the time of posting. Exp…",
+            "evidence_id": "doc:travel_expense_policy:6:1c50b0f52cec",
+            "score": 8.0,
+            "matched_terms": [
+              "pre",
+              "approval"
+            ]
+          }
+        ]
+      },
+      "duration_ms": 0
+    }
+  ],
+  "model_calls": [],
+  "final_evidence": {
+    "status": "answer",
+    "intent": "te_policy_check",
+    "result": {
+      "date_basis": "accrual_date",
+      "perimeter_basis": "reported",
+      "perimeter_rows": 1839,
+      "total_rows": 5440,
+      "findings_by_rule": {
+        "lodging_nightly_cap": {
+          "NOT_APPLICABLE": 1434,
+          "NOT_A_BREACH": 393,
+          "POTENTIAL_BREACH": 3,
+          "INSUFFICIENT_EVIDENCE": 9
+        },
+        "business_class_approval": {
+          "NOT_APPLICABLE": 1779,
+          "INSUFFICIENT_EVIDENCE": 60
+        },
+        "per_diem_daily_cap": {
+          "NOT_APPLICABLE": 1619,
+          "INSUFFICIENT_EVIDENCE": 220
+        },
+        "client_entertainment_approval": {
+          "NOT_A_BREACH": 151,
+          "NOT_APPLICABLE": 1653,
+          "CONFIRMED_RULE_MATCH": 35
+        },
+        "client_entertainment_attendee_record": {
+          "INSUFFICIENT_EVIDENCE": 195,
+          "NOT_APPLICABLE": 1644
+        },
+        "pre_approval_threshold": {
+          "NOT_A_BREACH": 279,
+          "NOT_APPLICABLE": 1495,
+          "CONFIRMED_RULE_MATCH": 32,
+          "INSUFFICIENT_EVIDENCE": 33
+        },
+        "non_reimbursable_keyword": {
+          "NOT_A_BREACH": 1839
+        }
+      },
+      "findings_by_state": {
+        "NOT_APPLICABLE": 9624,
+        "NOT_A_BREACH": 2662,
+        "INSUFFICIENT_EVIDENCE": 517,
+        "CONFIRMED_RULE_MATCH": 67,
+        "POTENTIAL_BREACH": 3
+      }
+    },
+    "sources": [
+      {
+        "filename": "travel_expense_policy.md",
+        "section": "Air travel",
+        "snippet": "Economy class is required for all scheduled flights with a total duration under six hours. Business class may be booked for flights over six hours with the written approval of a Vice President.",
+        "evidence_id": "doc:travel_expense_policy:2:6d29e78527b5"
+      },
+      {
+        "filename": "travel_expense_policy.md",
+        "section": "Client entertainment",
+        "snippet": "Client entertainment over **USD 500** per event requires the sign-off of a Vice President in advance of the event. The names and employers of all attendees must…",
+        "evidence_id": "doc:travel_expense_policy:5:e36d678c8bce"
+      },
+      {
+        "filename": "travel_expense_policy.md",
+        "section": "Lodging",
+        "snippet": "Nightly room rates must not exceed **USD 275** in tier-one cities and **USD 190** elsewhere. Tier-one cities are: New York, San Francisco, Chicago, Boston, London, Amsterdam, Toronto, Zurich. Rates are exclusive of local tax. Where a stay exceeds the applicable cap, the difference is not reimbursable and must be rechar…",
+        "evidence_id": "doc:travel_expense_policy:3:625a44fd5d36"
+      },
+      {
+        "filename": "travel_expense_policy.md",
+        "section": "Meals",
+        "snippet": "A per-diem of **USD 85 per day** applies to employee meals while travelling. Receipts are not required within the per-diem.",
+        "evidence_id": "doc:travel_expense_policy:4:21c83b371b9e"
+      },
+      {
+        "filename": "travel_expense_policy.md",
+        "section": "Non-reimbursable",
+        "snippet": "Personal entertainment, airline lounge memberships, spouse or partner travel, traffic fines, and in-room minibar charges.",
+        "evidence_id": "doc:travel_expense_policy:7:aff945ac7133"
+      },
+      {
+        "filename": "travel_expense_policy.md",
+        "section": "Pre-approval",
+        "snippet": "Any single expense of **USD 1,000 or more** requires documented pre-approval before the commitment is made. The approval reference must be recorded against the transaction at the time of posting. Expenses of USD 1,000 or mor…",
+        "evidence_id": "doc:travel_expense_policy:6:1c50b0f52cec"
+      }
+    ],
+    "assumptions": [
+      "date basis: accrual_date",
+      "T&E perimeter basis: 'reported' (324 row(s) excluded under this basis that would be included under the alternative)"
+    ],
+    "warnings": [
+      "324 row(s) under account_code(s) ['6230'] were T&E policy scope at some point in this dataset's date range but fall outside the 'reported' perimeter basis due to a chart-of-accounts reclassification -- the T&E policy document was not amended by that reclassification. Re-run with perimeter_basis='policy' to include them.",
+      "Findings are rule-match candidates for review, never a definitive compliance audit. Business-class flight duration and per-diem day-counts are absent from this dataset and are never inferred from the destination city, so those rules surface as INSUFFICIENT_EVIDENCE rather than a guessed verdict."
+    ],
+    "missing_evidence": [],
+    "coverage": {
+      "selected_rows": 1839,
+      "computable_rows": 1839,
+      "computable_amount_pct": 100.0
+    },
+    "calculations": [],
+    "tool_calls": [
+      {
+        "tool": "query_ledger",
+        "arguments_summary": {
+          "rows": 10916,
+          "date_start": "2024-01-01",
+          "date_end": "2024-12-31",
+          "date_field": "accrual_date",
+          "entities": null,
+          "cost_centres": null,
+          "account_codes": null,
+          "vendor_ids": null
+        },
+        "result_summary": {
+          "rows": 5440,
+          "filters": {
+            "date_field": "accrual_date",
+            "date_start": "2024-01-01 00:00:00",
+            "date_end": "2024-12-31 00:00:00",
+            "entities": null,
+            "cost_centres": null,
+            "account_codes": null,
+            "vendor_ids": null
+          },
+          "rows_in": 10916,
+          "rows_matched": 5440
+        },
+        "duration_ms": 1
+      },
+      {
+        "tool": "load_policy_rules",
+        "arguments_summary": {
+          "path": null
+        },
+        "result_summary": {
+          "source_document": "travel_expense_policy.md",
+          "te_perimeter": {
+            "parent_name": "Travel & Entertainment",
+            "source_section": "Scope"
+          },
+          "lodging": {
+            "account_name": "Hotels & Lodging",
+            "tier_one_cap_usd": 275.0,
+            "standard_cap_usd": 190.0,
+            "tier_one_cities": [
+              "New York",
+              "San Francisco",
+              "Chicago",
+              "Boston",
+              "London",
+              "Amsterdam",
+              "Toronto",
+              "Zurich"
+            ],
+            "source_section": "Lodging"
+          },
+          "airfare": {
+            "account_name": "Airfare",
+            "business_class_keyword": "business",
+            "source_section": "Air travel"
+          },
+          "per_diem": {
+            "account_name": "Meals & Entertainment",
+            "team_meals_keyword": "team meals",
+            "daily_cap_usd": 85.0,
+            "source_section": "Meals"
+          },
+          "client_entertainment": {
+            "account_name": "Meals & Entertainment",
+            "keyword": "client entertainment",
+            "approval_threshold_usd": 500.0,
+            "source_section": "Client entertainment"
+          },
+          "pre_approval": {
+            "threshold_usd": 1000.0,
+            "source_section": "Pre-approval"
+          },
+          "non_reimbursable": {
+            "keywords": [
+              "personal entertainment",
+              "airline lounge",
+              "spouse",
+              "partner travel",
+              "traffic fine",
+              "minibar"
+            ],
+            "source_section": "Non-reimbursable"
+          }
+        },
+        "duration_ms": 1
+      },
+      {
+        "tool": "evaluate_te_policy",
+        "arguments_summary": {
+          "rows": 5440,
+          "coa": 34,
+          "fx": 71,
+          "policy": "<PolicyRules: source_document=travel_expense_policy.md, parent_name=Travel & Entertainment, source_section=Scope, account_name=Hotels & Lodging, tier_one_cap_usd=275.0, standard_cap_usd=190.0, tier_one_cities=8, source_section=Lodging, account_name=Airfare, business_class_keyword=business, source_section=Air travel, account_name=Meals & Entertainment, team_meals_keyword=team meals, daily_cap_usd=85.0, source_section=Meals, account_name=Meals & Entertainment, keyword=client entertainment, approval_threshold_usd=500.0, source_section=Client entertainment, threshold_usd=1000.0, source_section=Pre-approval, keywords=6, source_section=Non-reimbursable>",
+          "perimeter_basis": "reported",
+          "date_field": "accrual_date"
+        },
+        "result_summary": {
+          "findings": [
+            {
+              "txn_id": "T000625",
+              "rule_id": "lodging_nightly_cap",
+              "state": "NOT_APPLICABLE",
+              "observed_value": null,
+              "threshold": null,
+              "reason": "row is not in the Hotels & Lodging category",
+              "source_document": "travel_expense_policy.md",
+              "source_section": "Lodging"
+            },
+            {
+              "txn_id": "T000625",
+              "rule_id": "business_class_approval",
+              "state": "NOT_APPLICABLE",
+              "observed_value": null,
+              "threshold": "business",
+              "reason": "row is not in the Airfare category",
+              "source_document": "travel_expense_policy.md",
+              "source_section": "Air travel"
+            },
+            {
+              "txn_id": "T000625",
+              "rule_id": "per_diem_daily_cap",
+              "state": "NOT_APPLICABLE",
+              "observed_value": null,
+              "threshold": 85.0,
+              "reason": "row is not a per-diem meals expense",
+              "source_document": "travel_expense_policy.md",
+              "source_section": "Meals"
+            },
+            {
+              "txn_id": "T000625",
+              "rule_id": "client_entertainment_approval",
+              "state": "NOT_A_BREACH",
+              "observed_value": 1552.89,
+              "threshold": 500.0,
+              "reason": "VP approval reference recorded",
+              "source_document": "travel_expense_policy.md",
+              "source_section": "Client entertainment"
+            },
+            {
+              "txn_id": "T000625",
+              "rule_id": "client_entertainment_attendee_record",
+              "state": "INSUFFICIENT_EVIDENCE",
+              "observed_value": null,
+              "threshold": null,
+              "reason": "attendee name/employer roster is not captured anywhere in gl_transactions.csv, so this sub-rule can never be confirmed from ledger data alone",
+              "source_document": "travel_expense_policy.md",
+              "source_section": "Client entertainment"
+            },
+            {
+              "txn_id": "T000625",
+              "rule_id": "pre_approval_threshold",
+              "state": "NOT_A_BREACH",
+              "observed_value": 1552.89,
+              "threshold": 1000.0,
+              "reason": "approval reference recorded",
+              "source_document": "travel_expense_policy.md",
+              "source_section": "Pre-approval"
+            },
+            {
+              "txn_id": "T000625",
+              "rule_id": "non_reimbursable_keyword",
+              "state": "NOT_A_BREACH",
+              "observed_value": "client entertainment Milwaukee",
+              "threshold": null,
+              "reason": "no non-reimbursable keyword found in memo",
+              "source_document": "travel_expense_policy.md",
+              "source_section": "Non-reimbursable"
+            },
+            {
+              "txn_id": "T001793",
+              "rule_id": "lodging_nightly_cap",
+              "state": "NOT_APPLICABLE",
+              "observed_value": null,
+              "threshold": null,
+              "reason": "row is not in the Hotels & Lodging category",
+              "source_document": "travel_expense_policy.md",
+              "source_section": "Lodging"
+            },
+            "+12865 more"
+          ],
+          "perimeter_basis": "reported",
+          "perimeter_rows": 1839,
+          "total_rows": 5440,
+          "unmapped_account_rows": 0,
+          "rows_excluded_by_reclassification": {
+            "row_count": 324,
+            "account_codes": [
+              "6230"
+            ]
+          },
+          "warnings": [
+            "324 row(s) under account_code(s) ['6230'] were T&E policy scope at some point in this dataset's date range but fall outside the 'reported' perimeter basis due to a chart-of-accounts reclassification …"
+          ],
+          "limitation": "Findings are rule-match candidates for review, never a definitive compliance audit. Business-class flight duration and per-diem day-counts are absent from this dataset and are never inferred from the…"
+        },
+        "duration_ms": 74
+      },
+      {
+        "tool": "search_documents",
+        "arguments_summary": {
+          "query": "Air travel",
+          "filenames": [
+            "travel_expense_policy.md"
+          ],
+          "documents_dir": null,
+          "max_results": 1
+        },
+        "result_summary": {
+          "query": "Air travel",
+          "filenames_searched": [
+            "travel_expense_policy.md"
+          ],
+          "matches": [
+            {
+              "filename": "travel_expense_policy.md",
+              "section": "Air travel",
+              "snippet": "Economy class is required for all scheduled flights with a total duration under six hours. Business class may be booked for flights over six hours with the written approval of a Vice President.",
+              "evidence_id": "doc:travel_expense_policy:2:6d29e78527b5",
+              "score": 4.0,
+              "matched_terms": [
+                "air",
+                "travel"
+              ]
+            }
+          ]
+        },
+        "duration_ms": 0
+      },
+      {
+        "tool": "search_documents",
+        "arguments_summary": {
+          "query": "Client entertainment",
+          "filenames": [
+            "travel_expense_policy.md"
+          ],
+          "documents_dir": null,
+          "max_results": 1
+        },
+        "result_summary": {
+          "query": "Client entertainment",
+          "filenames_searched": [
+            "travel_expense_policy.md"
+          ],
+          "matches": [
+            {
+              "filename": "travel_expense_policy.md",
+              "section": "Client entertainment",
+              "snippet": "Client entertainment over **USD 500** per event requires the sign-off of a Vice President in advance of the event. The names and employers of all attendees must…",
+              "evidence_id": "doc:travel_expense_policy:5:e36d678c8bce",
+              "score": 6.0,
+              "matched_terms": [
+                "client",
+                "entertainment"
+              ]
+            }
+          ]
+        },
+        "duration_ms": 0
+      },
+      {
+        "tool": "search_documents",
+        "arguments_summary": {
+          "query": "Lodging",
+          "filenames": [
+            "travel_expense_policy.md"
+          ],
+          "documents_dir": null,
+          "max_results": 1
+        },
+        "result_summary": {
+          "query": "Lodging",
+          "filenames_searched": [
+            "travel_expense_policy.md"
+          ],
+          "matches": [
+            {
+              "filename": "travel_expense_policy.md",
+              "section": "Lodging",
+              "snippet": "Nightly room rates must not exceed **USD 275** in tier-one cities and **USD 190** elsewhere. Tier-one cities are: New York, San Francisco, Chicago, Boston, London, Amsterdam, Toronto, Zurich. Rates a…",
+              "evidence_id": "doc:travel_expense_policy:3:625a44fd5d36",
+              "score": 2.0,
+              "matched_terms": [
+                "lodging"
+              ]
+            }
+          ]
+        },
+        "duration_ms": 0
+      },
+      {
+        "tool": "search_documents",
+        "arguments_summary": {
+          "query": "Meals",
+          "filenames": [
+            "travel_expense_policy.md"
+          ],
+          "documents_dir": null,
+          "max_results": 1
+        },
+        "result_summary": {
+          "query": "Meals",
+          "filenames_searched": [
+            "travel_expense_policy.md"
+          ],
+          "matches": [
+            {
+              "filename": "travel_expense_policy.md",
+              "section": "Meals",
+              "snippet": "A per-diem of **USD 85 per day** applies to employee meals while travelling. Receipts are not required within the per-diem.",
+              "evidence_id": "doc:travel_expense_policy:4:21c83b371b9e",
+              "score": 3.0,
+              "matched_terms": [
+                "meals"
+              ]
+            }
+          ]
+        },
+        "duration_ms": 0
+      },
+      {
+        "tool": "search_documents",
+        "arguments_summary": {
+          "query": "Non-reimbursable",
+          "filenames": [
+            "travel_expense_policy.md"
+          ],
+          "documents_dir": null,
+          "max_results": 1
+        },
+        "result_summary": {
+          "query": "Non-reimbursable",
+          "filenames_searched": [
+            "travel_expense_policy.md"
+          ],
+          "matches": [
+            {
+              "filename": "travel_expense_policy.md",
+              "section": "Non-reimbursable",
+              "snippet": "Personal entertainment, airline lounge memberships, spouse or partner travel, traffic fines, and in-room minibar charges.",
+              "evidence_id": "doc:travel_expense_policy:7:aff945ac7133",
+              "score": 4.0,
+              "matched_terms": [
+                "non",
+                "reimbursable"
+              ]
+            }
+          ]
+        },
+        "duration_ms": 0
+      },
+      {
+        "tool": "search_documents",
+        "arguments_summary": {
+          "query": "Pre-approval",
+          "filenames": [
+            "travel_expense_policy.md"
+          ],
+          "documents_dir": null,
+          "max_results": 1
+        },
+        "result_summary": {
+          "query": "Pre-approval",
+          "filenames_searched": [
+            "travel_expense_policy.md"
+          ],
+          "matches": [
+            {
+              "filename": "travel_expense_policy.md",
+              "section": "Pre-approval",
+              "snippet": "Any single expense of **USD 1,000 or more** requires documented pre-approval before the commitment is made. The approval reference must be recorded against the transaction at the time of posting. Exp…",
+              "evidence_id": "doc:travel_expense_policy:6:1c50b0f52cec",
+              "score": 8.0,
+              "matched_terms": [
+                "pre",
+                "approval"
+              ]
+            }
+          ]
+        },
+        "duration_ms": 0
+      }
+    ],
+    "refusal_reason": null,
+    "clarification_options": []
+  },
+  "duration_ms": 89,
+  "estimated_cost_usd": 0.0
+}

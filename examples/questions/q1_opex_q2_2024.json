@@ -1,0 +1,8 @@
+{
+  "intent": "opex_by_cost_centre",
+  "question": "What was our opex by cost centre in Q2?",
+  "params": {
+    "quarter": "Q2",
+    "year": 2024
+  }
+}

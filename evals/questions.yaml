@@ -1,0 +1,246 @@
+# Fase E — eval set for the eight analytical questions (docs/PROMPT_MAESTRO.md
+# §"LAS OCHO PREGUNTAS"). Read together with evals/cases.py, which is the
+# code-side twin of this file (workflow + dynamic-parameter wiring, joined
+# by `id`) and evals/preconditions.py (the independent, tools-only checks
+# that decide which branch of a `conditional` case applies.
+#
+# NO NUMERIC VALUE FROM data/*.csv APPEARS BELOW. This suite is re-run
+# against a second dataset with the same columns and different numbers
+# (that is the whole point of this case), so every expectation here is
+# either a structural fact about the code (a status the gate enforces, a
+# key the workflow always populates) or is itself conditioned on a
+# precondition computed from whatever the loaded dataset actually contains.
+#
+# status_basis:
+#   structural  -> a single expected_status holds regardless of the
+#                  dataset's numbers.
+#   conditional -> expected_status depends on a precondition (a boolean
+#                  fact, computed independently via finance_assistant.tools
+#                  in evals/preconditions.py, never by calling the workflow
+#                  under test or by re-deriving a gate threshold). The
+#                  runner evaluates the precondition first, prints what it
+#                  found, and only then knows which branch's
+#                  expected_status/expected_key_facts apply.
+#
+# expected_key_facts vocabulary (see evals/run_evals.py's ASSERTIONS
+# dispatch table for the implementation of each):
+#   result_has_keys                  - list[str], all must be in bundle.result
+#   result_is_none                   - bool
+#   missing_evidence_reason_codes_include - list[str], MissingEvidenceReasonCode names
+#   clarification_options_nonempty   - bool
+#   clarification_options_match_precondition_labels - bool; only meaningful
+#       on q1's NEEDS_CLARIFICATION branch: checks bundle.clarification_options
+#       against the exact year-labels evals/preconditions.py independently
+#       computed, so the assertion is dynamic (never a hardcoded year here).
+#   assumptions_contain              - list[str] (code-literal substrings only)
+#   calculations_nonempty            - bool
+#   calculations_include             - list of {description_contains, operation}
+
+cases:
+  - id: q1_opex_by_cost_centre
+    question: "What was our opex by cost centre in Q2?"
+    expected_intent: OPEX_BY_COST_CENTRE
+    status_basis: conditional
+    rationale: >
+      La pregunta real no menciona año, así que se invoca deliberadamente sin
+      year (ver evals/cases.py::_q1_params) para ejercitar el mecanismo de
+      ambigüedad de periodo del propio gate, no para adivinar uno.
+      A diferencia de Q2/Q3/Q4/Q5, el umbral de materialidad
+      (evidence.gate.DEFAULT_PERIOD_READING_TOLERANCE) es una constante del
+      gate, no un hecho de datos crudo — así que la precondición
+      (opex_q2_period_ambiguous) no reimplementa ni adivina ese umbral: importa
+      la misma función y constante que apply_gate usa internamente
+      (readings_are_material_difference) y le pasa lecturas por año calculadas
+      de forma independiente vía tools/*. Esto convierte el caso en un test
+      real del mecanismo de ambigüedad, no en un "acepta casi cualquier cosa".
+    precondition:
+      check: opex_q2_period_ambiguous
+      if_true:
+        expected_status: NEEDS_CLARIFICATION
+        expected_key_facts:
+          - result_is_none: true
+          - clarification_options_nonempty: true
+          - clarification_options_match_precondition_labels: true
+      if_false:
+        expected_status: [ANSWER, PARTIAL]
+        expected_key_facts:
+          - result_has_keys: [by_cost_centre_usd, total_usd, opex_perimeter]
+          - assumptions_contain: ["defaulted to the most recent year"]
+    required_sources: []
+    forbidden_claims: []
+
+  - id: q2_travel_comparison
+    question: "How does travel & entertainment spend in the most recent year compare to the prior year?"
+    expected_intent: TRAVEL_COMPARISON
+    status_basis: conditional
+    rationale: >
+      workflows/travel.py siempre calcula y devuelve la base reportada Y las
+      dos bases comparables (referencia = fecha más reciente / más antigua del
+      rango combinado) — eso no depende de si hubo reclasificación. Lo que sí
+      depende del dataset es si el estado sube a PARTIAL: solo ocurre si algún
+      account_code cambió de clasificación en el COA entre los dos años (R3/R4)
+      o si el signo de la varianza difiere entre bases. La precondición
+      (coa_reclassification_between_years) comprueba el hecho estructural del
+      COA de forma independiente, sin llamar al workflow.
+    precondition:
+      check: coa_reclassification_between_years
+      if_true:
+        expected_status: PARTIAL
+        expected_key_facts:
+          - result_has_keys: [reported_basis, comparable_basis_current, comparable_basis_prior, reclassification_bridge_usd]
+      if_false:
+        expected_status: ANSWER
+        expected_key_facts:
+          - result_has_keys: [reported_basis, comparable_basis_current, comparable_basis_prior, reclassification_bridge_usd]
+    required_sources: []
+    forbidden_claims: []
+
+  - id: q3_consolidated_spend
+    question: "What was our consolidated spend in Q3, in USD?"
+    expected_intent: CONSOLIDATED_SPEND
+    status_basis: conditional
+    rationale: >
+      El rechazo es contingente, no estructural: depende de que falte una tasa
+      de cambio requerida en el periodo (R2). Contra un dataset con tabla FX
+      completa para ese trimestre, la respuesta correcta es ANSWER y el eval
+      debe pasar igual — por eso missing_fx_rate_in_period se calcula de forma
+      independiente (query_ledger + convert_to_usd) para el mismo año que
+      consolidated_spend(year=None) resolvería, en vez de asumir REFUSED.
+      La aserción calculations_include es la que distingue un rechazo útil
+      (entrega componentes computables y el importe local no convertible) de
+      uno que simplemente se calla: si una regresión borrara `calculations`,
+      solo comprobar result_is_none + reason_code seguiría en verde.
+    precondition:
+      check: missing_fx_rate_in_period
+      if_true:
+        expected_status: REFUSED
+        expected_key_facts:
+          - result_is_none: true
+          - missing_evidence_reason_codes_include: [MISSING_FX_RATE]
+          - calculations_nonempty: true
+          - calculations_include:
+              - description_contains: "computable USD total"
+                operation: sum
+              - description_contains: "computable components by entity"
+                operation: groupby_sum
+              - description_contains: "non-convertible local amount"
+                operation: groupby_sum
+      if_false:
+        expected_status: ANSWER
+        expected_key_facts:
+          - result_has_keys: [exact_total_usd]
+    required_sources: []
+    forbidden_claims: []
+
+  - id: q4_top_vendors
+    question: "Who are our top 10 vendors by spend?"
+    expected_intent: TOP_VENDORS
+    status_basis: conditional
+    rationale: >
+      R6 prohíbe fusionar proveedores por similitud de nombre, pero exige medir
+      el impacto: el ranking se calcula por vendor_id (autoritativo) y por
+      cluster de alias candidato (detectado, nunca aplicado). Si ambas
+      composiciones del top-10 coinciden, ANSWER es honesto; si difieren, solo
+      PARTIAL lo es. La precondición (alias_clusters_change_topn) recompone las
+      mismas tools (vendor_lookup, convert_to_usd, aggregate_usd_by,
+      detect_alias_clusters) de forma independiente al workflow para establecer
+      ese hecho antes de invocarlo — misma duplicación deliberada que ya usan
+      tests/test_workflow_vendors.py para no invocar la función bajo test al
+      calcular el valor esperado.
+    precondition:
+      check: alias_clusters_change_topn
+      if_true:
+        expected_status: PARTIAL
+        expected_key_facts:
+          - result_has_keys: [ranking_by_vendor_id, ranking_by_alias_cluster, composition_changes]
+      if_false:
+        expected_status: ANSWER
+        expected_key_facts:
+          - result_has_keys: [ranking_by_vendor_id, ranking_by_alias_cluster, composition_changes]
+    required_sources: []
+    forbidden_claims: []
+
+  - id: q5_budget_variance
+    question: "Which cost centres performed worst against budget in Q3, and what's driving it?"
+    expected_intent: BUDGET_VARIANCE
+    status_basis: conditional
+    rationale: >
+      El año se deriva de budget.csv (R5: cubre un único año), nunca de un
+      literal en este YAML. El estado sube a PARTIAL si falta cobertura FX en
+      el periodo o si alguna clave de budget duplicada resulta ambigua bajo el
+      chequeo de plausibilidad de tools/budget.py (ambas hipótesis, additive y
+      single_row, igual de cercanas a la mediana de pares). La precondición
+      recompone query_ledger + resolve_account_hierarchy +
+      normalize_reporting_cost_centre + convert_to_usd + aggregate_usd_by +
+      query_budget de forma independiente, igual que hace
+      workflows/variance.py paso 1, sin invocar el workflow.
+    precondition:
+      check: fx_incomplete_or_budget_keys_ambiguous
+      if_true:
+        expected_status: PARTIAL
+        expected_key_facts:
+          - result_has_keys: [variance_ranking_usd, worst_cost_centre, driver_account]
+      if_false:
+        expected_status: ANSWER
+        expected_key_facts:
+          - result_has_keys: [variance_ranking_usd, worst_cost_centre, driver_account]
+    required_sources: []
+    forbidden_claims: []
+
+  - id: q6_te_policy_check
+    question: "Which transactions breach our travel & entertainment policy?"
+    expected_intent: TE_POLICY_CHECK
+    status_basis: structural
+    expected_status: ANSWER
+    rationale: >
+      El sistema se presenta como detector de candidatos, nunca como auditor
+      definitivo (docs/PROMPT_MAESTRO.md, MOTOR DE POLÍTICA T&E). Cada fila del
+      perímetro T&E se evalúa y cae en uno de los cinco estados declarados
+      (incluido INSUFFICIENT_EVIDENCE); eso ya es una respuesta completa,
+      incluso si el conteo de hallazgos confirmados fuera cero. Por eso
+      ANSWER es incondicional aquí, sin precondición.
+    expected_key_facts:
+      - result_has_keys: [findings_by_rule, findings_by_state]
+    required_sources: []
+    forbidden_claims: []
+
+  - id: q7_headcount_cost_per_fte
+    question: "What's our headcount cost per FTE?"
+    expected_intent: HEADCOUNT_COST_PER_FTE
+    status_basis: structural
+    expected_status: REFUSED
+    rationale: >
+      El único de los ocho casos sin precondición: el rechazo es estructural,
+      no depende de los números de este dataset. _scan_schemas_for_fte_column
+      escanea los cinco esquemas declarados (GL, COA, budget, FX, vendors) y
+      ninguno declara una columna de FTE/headcount — eso es una propiedad del
+      esquema, idéntica en cualquier dataset conforme a este caso, no un
+      hallazgo de esta muestra de datos. Es uno de "los dos rechazos limpios"
+      del master prompt.
+    expected_key_facts:
+      - result_is_none: true
+      - missing_evidence_reason_codes_include: [MISSING_FTE_DENOMINATOR]
+    required_sources: [board_memo_2024_q2.md]
+    forbidden_claims:
+      - '\$\s?\d'
+      - '\d+(\.\d+)?\s*/\s*fte'
+
+  - id: q8_duplicate_payment_check
+    question: "Have we paid any vendor twice for the same thing?"
+    expected_intent: DUPLICATE_PAYMENT_CHECK
+    status_basis: structural
+    expected_status: ANSWER
+    rationale: >
+      Igual que Q6: candidatos de asiento duplicado por huella económica, nunca
+      una prueba de pago doble real (eso requeriría evidencia de tesorería que
+      no está en el dataset). Cero candidatos sigue siendo una respuesta
+      completa y honesta, así que ANSWER es incondicional. Las dos entradas de
+      missing_evidence (sin referencia de liquidación de tesorería; detección
+      de reversión limitada a coincidencia literal de doc_ref) se añaden
+      siempre en workflows/duplicates.py, independientemente de cuántos
+      candidatos aparezcan.
+    expected_key_facts:
+      - result_has_keys: [candidates_by_confidence, reversed_candidate_count, unreversed_candidate_count]
+      - missing_evidence_reason_codes_include: [OTHER]
+    required_sources: []
+    forbidden_claims: []
