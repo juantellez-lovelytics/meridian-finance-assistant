@@ -9,6 +9,7 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
+*.egg-info/
 
 # Streamlit
 .streamlit/secrets.toml
